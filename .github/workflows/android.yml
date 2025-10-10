@@ -2,28 +2,35 @@ name: Build APK
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main ]  # Trigger build on push to main branch
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Checkout your code
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # Step 2: Set up Java (required for Gradle)
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Build Debug APK
-        run: ./gradlew assembleDebug
+      # Step 3: Make Gradle wrapper executable (fix exit 127)
+      - name: Make gradlew executable
+        run: chmod +x gradlew
 
-      - name: Upload APK Artifact
+      # Step 4: Build the Debug APK
+      - name: Build Debug APK
+        run: ./gradlew :aspectRatioCalculator:app:assembleDebug
+
+      # Step 5: Upload APK as artifact
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: app-debug-apk
-          path: app/build/outputs/apk/debug/app-debug.apk
-
+          path: app/aspectRatioCalculator/app/build/outputs/apk/debug/app-debug.apk
