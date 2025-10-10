@@ -2,7 +2,7 @@ name: Build APK
 
 on:
   push:
-    branches: [ main ]   # Trigger build on push to main branch
+    branches: [ main ]
 
 jobs:
   build:
@@ -22,7 +22,8 @@ jobs:
         run: ./gradlew assembleDebug
 
       - name: Upload APK Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: app-debug-apk
           path: app/build/outputs/apk/debug/app-debug.apk
+
