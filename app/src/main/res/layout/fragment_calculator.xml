@@ -138,6 +138,34 @@
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
+    <TextView
+        android:id="@+id/dimensionsLabel"
+        style="?attr/textAppearanceTitleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/matching_dimensions"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/resultCard" />
+
+    <HorizontalScrollView
+        android:id="@+id/dimensionsScroll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:scrollbars="none"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@+id/dimensionsLabel">
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/dimensionsGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:singleLine="true" />
+    </HorizontalScrollView>
+
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/previewContainer"
         style="@style/Widget.Material3.CardView.Filled"
@@ -146,7 +174,7 @@
         android:layout_marginTop="16dp"
         app:cardBackgroundColor="?attr/colorSurfaceContainerHigh"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/resultCard">
+        app:layout_constraintTop_toBottomOf="@+id/dimensionsScroll">
 
         <TextView
             android:id="@+id/previewBox"

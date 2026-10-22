@@ -220,10 +220,30 @@ class CalculatorFragment : Fragment() {
             }
             Motion.pop(binding.resultCard)
             binding.previewBox.text = ratio
+            showMatchingDimensions(simplifiedWidth.toInt(), simplifiedHeight.toInt())
             updatePreview(width, height)
         } catch (e: Exception) {
             showMessage(R.string.err_calculating)
         }
+    }
+
+    private fun showMatchingDimensions(ratioWidth: Int, ratioHeight: Int) {
+        val sizes = MatchingDimensions.forRatio(ratioWidth, ratioHeight)
+        binding.dimensionsGroup.removeAllViews()
+        sizes.forEach { (w, h) ->
+            val chip = LayoutInflater.from(requireContext())
+                .inflate(R.layout.item_dimension_chip, binding.dimensionsGroup, false) as Chip
+            chip.text = getString(R.string.dimension_format, w, h)
+            chip.setOnClickListener {
+                binding.widthInput.setText(w.toString())
+                binding.heightInput.setText(h.toString())
+            }
+            binding.dimensionsGroup.addView(chip)
+        }
+        val visibility = if (sizes.isEmpty()) View.GONE else View.VISIBLE
+        binding.dimensionsLabel.visibility = visibility
+        binding.dimensionsScroll.visibility = visibility
+        binding.dimensionsScroll.scrollTo(0, 0)
     }
 
     private fun previewTransition(): TransitionSet {
