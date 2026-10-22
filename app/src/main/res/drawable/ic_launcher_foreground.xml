@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 512px artwork (theme blue) scaled to ~62.7dp and centred on its minimum enclosing circle,
-     so the F's farthest corners sit 1.5dp inside the 72dp visible circular mask. -->
+<!-- White F artwork: its 512px canvas maps to the 72dp visible mask, so it sits exactly as designed. -->
 <inset xmlns:android="http://schemas.android.com/apk/res/android"
     android:drawable="@drawable/ic_launcher_art"
-    android:insetBottom="22.6dp"
-    android:insetLeft="22.66dp"
-    android:insetRight="22.66dp"
-    android:insetTop="22.72dp" />
+    android:inset="18dp" />

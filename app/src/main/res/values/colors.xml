@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="ic_launcher_background">#FFFFFF</color>
+    <color name="ic_launcher_background">#004AAD</color>
     <!-- Material 3 baseline scheme (seed #4355B9). Used on Android < 12; Android 12+ gets dynamic color. -->
     <color name="md_primary">#4355B9</color>
     <color name="md_on_primary">#FFFFFF</color>
