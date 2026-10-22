@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- 512px artwork scaled to 60dp and centred: keeps the F inside the 66dp adaptive-icon safe zone. -->
+<!-- 512px artwork (theme blue) scaled to ~62.7dp and centred on its minimum enclosing circle,
+     so the F's farthest corners sit 1.5dp inside the 72dp visible circular mask. -->
 <inset xmlns:android="http://schemas.android.com/apk/res/android"
     android:drawable="@drawable/ic_launcher_art"
-    android:insetBottom="24dp"
-    android:insetLeft="24dp"
-    android:insetRight="24dp"
-    android:insetTop="24dp" />
+    android:insetBottom="22.6dp"
+    android:insetLeft="22.66dp"
+    android:insetRight="22.66dp"
+    android:insetTop="22.72dp" />
