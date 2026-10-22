@@ -64,13 +64,11 @@
         android:scrollbars="none"
         app:layout_constraintTop_toBottomOf="@+id/presetsLabel">
 
-        <com.google.android.material.chip.ChipGroup
+        <LinearLayout
             android:id="@+id/presetsGroup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:selectionRequired="false"
-            app:singleLine="true"
-            app:singleSelection="true" />
+            android:orientation="horizontal" />
     </HorizontalScrollView>
 
     <com.google.android.material.button.MaterialButton
@@ -138,43 +136,42 @@
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <TextView
-        android:id="@+id/dimensionsLabel"
-        style="?attr/textAppearanceTitleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="@string/matching_dimensions"
-        android:textColor="?attr/colorOnSurfaceVariant"
-        android:visibility="gone"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/resultCard" />
-
-    <HorizontalScrollView
-        android:id="@+id/dimensionsScroll"
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@+id/viewToggle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:scrollbars="none"
-        android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@+id/dimensionsLabel">
+        android:layout_marginTop="16dp"
+        app:checkedButton="@+id/showPreviewButton"
+        app:layout_constraintTop_toBottomOf="@+id/resultCard"
+        app:selectionRequired="true"
+        app:singleSelection="true">
 
-        <com.google.android.material.chip.ChipGroup
-            android:id="@+id/dimensionsGroup"
-            android:layout_width="wrap_content"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/showPreviewButton"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:singleLine="true" />
-    </HorizontalScrollView>
+            android:layout_weight="1"
+            android:text="@string/view_preview" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/showSizesButton"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/view_sizes" />
+    </com.google.android.material.button.MaterialButtonToggleGroup>
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/previewContainer"
         style="@style/Widget.Material3.CardView.Filled"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="12dp"
         app:cardBackgroundColor="?attr/colorSurfaceContainerHigh"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dimensionsScroll">
+        app:layout_constraintTop_toBottomOf="@+id/viewToggle">
 
         <TextView
             android:id="@+id/previewBox"
@@ -185,4 +182,40 @@
             android:gravity="center" />
     </com.google.android.material.card.MaterialCardView>
 
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/sizesContainer"
+        style="@style/Widget.Material3.CardView.Filled"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="12dp"
+        android:visibility="gone"
+        app:cardBackgroundColor="?attr/colorSurfaceContainerHigh"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/viewToggle">
+
+        <TextView
+            android:id="@+id/sizesEmpty"
+            style="?attr/textAppearanceBodyMedium"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:padding="24dp"
+            android:text="@string/sizes_empty"
+            android:textColor="?attr/colorOnSurfaceVariant" />
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/sizesScroll"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:id="@+id/sizesList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingVertical="4dp" />
+        </androidx.core.widget.NestedScrollView>
+    </com.google.android.material.card.MaterialCardView>
 </androidx.constraintlayout.widget.ConstraintLayout>

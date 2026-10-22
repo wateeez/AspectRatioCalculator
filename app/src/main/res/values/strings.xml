@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Aspect Ratio Calculator</string>
+    <string name="app_name">FrameUP</string>
     <string name="hint_width">Width</string>
     <string name="hint_height">Height</string>
     <string name="dark_mode">Dark mode</string>
@@ -20,7 +20,12 @@
     <string name="save_preset">Save preset</string>
     <string name="back">Back</string>
     <string name="page_preview">Page preview</string>
-    <string name="matching_dimensions">Matching dimensions</string>
+    <string name="preset_custom">Custom</string>
+    <string name="view_preview">Preview</string>
+    <string name="view_sizes">Matching sizes</string>
+    <string name="sizes_empty">Calculate a ratio to see matching sizes</string>
+    <string name="copy_size">Copy size</string>
+    <string name="copied_size">Copied %1$s</string>
     <string name="dimension_format" translatable="false">%1$d × %2$d</string>
     <string name="save">Save</string>
     <string name="delete">Delete</string>

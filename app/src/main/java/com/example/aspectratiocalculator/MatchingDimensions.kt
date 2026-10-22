@@ -8,6 +8,16 @@ object MatchingDimensions {
     )
     private const val MIN_SIZES = 4
 
+    private val NAMES = mapOf(
+        640 to 360 to "nHD", 1280 to 720 to "HD", 1920 to 1080 to "Full HD", 2560 to 1440 to "QHD (2K)",
+        3840 to 2160 to "4K UHD", 7680 to 4320 to "8K UHD", 640 to 480 to "VGA", 800 to 600 to "SVGA",
+        1024 to 768 to "XGA", 1280 to 1024 to "SXGA", 1600 to 1200 to "UXGA", 1080 to 1080 to "Square HD",
+        1080 to 1920 to "Vertical Full HD", 720 to 1280 to "Vertical HD", 4096 to 2160 to "DCI 4K",
+    )
+
+    /** Common name for a size such as "Full HD", or null when it has none. */
+    fun nameOf(width: Int, height: Int): String? = NAMES[width to height]
+
     /** [ratioWidth]:[ratioHeight] must already be in lowest terms. Sorted by width. */
     fun forRatio(ratioWidth: Int, ratioHeight: Int): List<Pair<Int, Int>> {
         if (ratioWidth <= 0 || ratioHeight <= 0) return emptyList()

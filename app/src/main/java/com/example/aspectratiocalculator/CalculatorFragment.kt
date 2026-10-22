@@ -1,6 +1,9 @@
 package com.example.aspectratiocalculator
 
 import android.animation.ValueAnimator
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -8,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.PathInterpolator
+import android.widget.HorizontalScrollView
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.transition.ChangeBounds
@@ -15,14 +19,25 @@ import androidx.transition.TransitionManager
 import androidx.transition.TransitionSet
 import com.example.aspectratiocalculator.databinding.DialogSavePresetBinding
 import com.example.aspectratiocalculator.databinding.FragmentCalculatorBinding
+import com.example.aspectratiocalculator.databinding.ItemDimensionRowBinding
+import com.example.aspectratiocalculator.databinding.ItemPresetCardBinding
 import com.google.android.material.R as MaterialR
-import com.google.android.material.chip.Chip
+import com.google.android.material.card.MaterialCardView
+import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.motion.MotionUtils
 import com.google.android.material.snackbar.Snackbar
 import kotlin.math.min
 
 class CalculatorFragment : Fragment() {
+    private companion object {
+        val PRESET_NOTES = mapOf(
+            "16:9" to "Video · TV", "4:3" to "Classic · iPad", "21:9" to "Ultrawide", "1:1" to "Square",
+            "3:2" to "Photo", "2.39:1" to "Cinema", "5:4" to "Monitor", "9:16" to "Stories · Reels",
+            "1.85:1" to "Film", "8:5" to "Laptop",
+        )
+    }
+
     private var _binding: FragmentCalculatorBinding? = null
     private val binding get() = _binding!!
     private val defaultPresets = mapOf(
@@ -40,6 +55,7 @@ class CalculatorFragment : Fragment() {
 
     private lateinit var presetManager: PresetManager
     private var decimalAnimator: ValueAnimator? = null
+    private var shownSizesRatio: String? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentCalculatorBinding.inflate(inflater, container, false)
@@ -58,6 +74,12 @@ class CalculatorFragment : Fragment() {
         binding.calculateButton.setOnClickListener {
             calculateAspectRatio()
         }
+        binding.viewToggle.addOnButtonCheckedListener { _, checkedId, isChecked ->
+            if (!isChecked) return@addOnButtonCheckedListener
+            val showSizes = checkedId == R.id.showSizesButton
+            binding.previewContainer.visibility = if (showSizes) View.GONE else View.VISIBLE
+            binding.sizesContainer.visibility = if (showSizes) View.VISIBLE else View.GONE
+        }
 
         if (savedInstanceState == null) playEntrance()
     }
@@ -70,13 +92,14 @@ class CalculatorFragment : Fragment() {
         Motion.enterStaggered(
             listOf(
                 binding.widthInputLayout, binding.heightInputLayout, binding.presetsLabel,
-                binding.presetsScroll, binding.calculateButton, binding.resultCard, binding.previewContainer
+                binding.presetsScroll, binding.calculateButton, binding.resultCard, binding.viewToggle, binding.previewContainer
             )
         )
     }
 
     override fun onDestroyView() {
         decimalAnimator?.cancel()
+        shownSizesRatio = null
         _binding = null
         super.onDestroyView()
     }
@@ -122,38 +145,54 @@ class CalculatorFragment : Fragment() {
     }
 
     private fun updateCustomPresetChips() {
-        // Remove existing custom preset chips
         binding.presetsGroup.removeAllViews()
-
-        // Add default presets
         defaultPresets.forEach { (ratio, values) ->
-            addPresetChip(ratio, values.first, values.second)
+            addPresetCard(ratio, PRESET_NOTES[ratio], values.first, values.second)
         }
-
-        // Add custom presets
         presetManager.getCustomPresets().forEach { (name, values) ->
-            addPresetChip(name, values.first, values.second, true)
+            addPresetCard(name, getString(R.string.preset_custom), values.first, values.second, true)
         }
     }
 
-    private fun addPresetChip(name: String, width: Float, height: Float, isCustom: Boolean = false) {
-        val chip = LayoutInflater.from(requireContext())
-            .inflate(R.layout.item_preset_chip, binding.presetsGroup, false) as Chip
-        chip.apply {
-            text = name
-            setOnClickListener {
-                binding.widthInput.setText(width.toString())
-                binding.heightInput.setText(height.toString())
-                calculateAspectRatio()
-            }
-            if (isCustom) {
-                setOnLongClickListener {
-                    showDeletePresetDialog(name)
-                    true
-                }
+    private fun addPresetCard(name: String, note: String?, width: Float, height: Float, isCustom: Boolean = false) {
+        val card = ItemPresetCardBinding.inflate(layoutInflater, binding.presetsGroup, false)
+        card.presetName.text = name
+        card.presetNote.text = note.orEmpty()
+        card.presetShape.background = presetShape(width, height)
+        // Draw the shape at the preset's proportions inside the 44dp box.
+        val box = (44 * resources.displayMetrics.density).toInt()
+        card.presetShape.layoutParams = card.presetShape.layoutParams.apply {
+            if (width >= height) {
+                this.width = box
+                this.height = (box * height / width).toInt()
+            } else {
+                this.height = box
+                this.width = (box * width / height).toInt()
             }
         }
-        binding.presetsGroup.addView(chip)
+        card.root.tag = name
+        card.root.setOnClickListener {
+            binding.widthInput.setText(formatNumber(width))
+            binding.heightInput.setText(formatNumber(height))
+            calculateAspectRatio()
+        }
+        if (isCustom) {
+            card.root.setOnLongClickListener {
+                showDeletePresetDialog(name)
+                true
+            }
+        }
+        binding.presetsGroup.addView(card.root)
+    }
+
+    private fun presetShape(width: Float, height: Float): GradientDrawable {
+        val context = requireContext()
+        val density = resources.displayMetrics.density
+        return GradientDrawable().apply {
+            cornerRadius = 4 * density
+            setColor(MaterialColors.getColor(context, MaterialR.attr.colorPrimaryContainer, 0))
+            setStroke((2 * density).toInt(), MaterialColors.getColor(context, MaterialR.attr.colorPrimary, 0))
+        }
     }
 
     private fun showDeletePresetDialog(presetName: String) {
@@ -174,7 +213,7 @@ class CalculatorFragment : Fragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
                 // Clear chip selection when user types
-                binding.presetsGroup.clearCheck()
+                clearPresetSelection()
                 binding.widthInputLayout.error = null
                 binding.heightInputLayout.error = null
             }
@@ -221,6 +260,7 @@ class CalculatorFragment : Fragment() {
             Motion.pop(binding.resultCard)
             binding.previewBox.text = ratio
             showMatchingDimensions(simplifiedWidth.toInt(), simplifiedHeight.toInt())
+            highlightPreset(ratio)
             updatePreview(width, height)
         } catch (e: Exception) {
             showMessage(R.string.err_calculating)
@@ -228,23 +268,58 @@ class CalculatorFragment : Fragment() {
     }
 
     private fun showMatchingDimensions(ratioWidth: Int, ratioHeight: Int) {
+        val ratio = "$ratioWidth:$ratioHeight"
+        if (ratio == shownSizesRatio) return
+        shownSizesRatio = ratio
+
+        // Named standards (HD, Full HD, 4K...) first; sortedBy is stable so each group stays ordered by width.
         val sizes = MatchingDimensions.forRatio(ratioWidth, ratioHeight)
-        binding.dimensionsGroup.removeAllViews()
+            .sortedBy { (w, h) -> MatchingDimensions.nameOf(w, h) == null }
+        binding.sizesList.removeAllViews()
         sizes.forEach { (w, h) ->
-            val chip = LayoutInflater.from(requireContext())
-                .inflate(R.layout.item_dimension_chip, binding.dimensionsGroup, false) as Chip
-            chip.text = getString(R.string.dimension_format, w, h)
-            chip.setOnClickListener {
+            val row = ItemDimensionRowBinding.inflate(layoutInflater, binding.sizesList, false)
+            val text = getString(R.string.dimension_format, w, h)
+            row.dimensionText.text = text
+            val name = MatchingDimensions.nameOf(w, h)
+            row.dimensionLabel.text = name
+            row.dimensionLabel.visibility = if (name == null) View.GONE else View.VISIBLE
+            row.root.setOnClickListener {
                 binding.widthInput.setText(w.toString())
                 binding.heightInput.setText(h.toString())
+                calculateAspectRatio()
             }
-            binding.dimensionsGroup.addView(chip)
+            row.copyButton.setOnClickListener {
+                val clipboard = requireContext().getSystemService(ClipboardManager::class.java)
+                clipboard.setPrimaryClip(ClipData.newPlainText(text, "${w}x$h"))
+                Snackbar.make(binding.root, getString(R.string.copied_size, text), Snackbar.LENGTH_SHORT).show()
+            }
+            binding.sizesList.addView(row.root)
         }
-        val visibility = if (sizes.isEmpty()) View.GONE else View.VISIBLE
-        binding.dimensionsLabel.visibility = visibility
-        binding.dimensionsScroll.visibility = visibility
-        binding.dimensionsScroll.scrollTo(0, 0)
+        binding.sizesEmpty.visibility = if (sizes.isEmpty()) View.VISIBLE else View.GONE
+        binding.sizesScroll.visibility = if (sizes.isEmpty()) View.GONE else View.VISIBLE
+        binding.sizesScroll.scrollTo(0, 0)
     }
+
+    private fun clearPresetSelection() {
+        val group = binding.presetsGroup
+        for (i in 0 until group.childCount) (group.getChildAt(i) as? MaterialCardView)?.isChecked = false
+    }
+
+    private fun highlightPreset(ratio: String) {
+        val group = binding.presetsGroup
+        clearPresetSelection()
+        for (i in 0 until group.childCount) {
+            val card = group.getChildAt(i) as? MaterialCardView ?: continue
+            if (card.tag == ratio) {
+                card.isChecked = true
+                (card.parent.parent as? HorizontalScrollView)?.smoothScrollTo(card.left - card.width / 2, 0)
+                break
+            }
+        }
+    }
+
+    private fun formatNumber(value: Float): String =
+        if (value == value.toInt().toFloat()) value.toInt().toString() else value.toString()
 
     private fun previewTransition(): TransitionSet {
         val duration = MotionUtils.resolveThemeDuration(requireContext(), MaterialR.attr.motionDurationLong2, 400)

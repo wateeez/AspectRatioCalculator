@@ -1,4 +1,4 @@
-# Aspect Ratio Calculator
+# FrameUP
 
 A modern Android application (Kotlin, Material 3) that helps calculate and visualize aspect ratios, with custom presets and dark mode. It also converts newspaper advertisement sizes (column centimeters, cc) into centimeters and inches and previews the ad visually.
 
