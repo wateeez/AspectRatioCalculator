@@ -3,17 +3,17 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- "F" built from three trapezoids, centred inside the adaptive-icon safe zone. -->
+    <!-- Tapered "F" built from three trapezoids, centred inside the adaptive-icon safe zone. -->
     <!-- Stem -->
     <path
         android:fillColor="#FF000000"
-        android:pathData="M32.4,30.6L54,30.6L46.8,77.4L32.4,77.4Z" />
+        android:pathData="M33.3,29.7L48.6,29.7L44.1,78.3L33.3,78.3Z" />
     <!-- Top bar -->
     <path
         android:fillColor="#FF000000"
-        android:pathData="M32.4,30.6L75.6,30.6L68.4,45L32.4,45Z" />
+        android:pathData="M33.3,29.7L74.7,29.7L74.7,38.7L33.3,44.1Z" />
     <!-- Middle bar -->
     <path
         android:fillColor="#FF000000"
-        android:pathData="M32.4,53.1L66.6,53.1L59.4,66.6L32.4,66.6Z" />
+        android:pathData="M33.3,50.4L65.7,50.4L65.7,57.6L33.3,62.1Z" />
 </vector>
