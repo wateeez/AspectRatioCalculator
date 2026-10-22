@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_ratio"
+        android:icon="@drawable/ic_aspect_ratio"
+        android:title="@string/tab_ratio" />
+    <item
+        android:id="@+id/nav_ad"
+        android:icon="@drawable/ic_newspaper"
+        android:title="@string/tab_ad" />
+</menu>
